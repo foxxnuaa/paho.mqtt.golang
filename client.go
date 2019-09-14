@@ -475,11 +475,27 @@ func (c *client) reconnect() {
 func (c *client) connect() (byte, bool) {
 	DEBUG.Println(NET, "connect started")
 
+         if c.options.ReadTimeout > 0 {
+		err := c.conn.SetReadDeadline(time.Now().Add(c.options.ReadTimeout))
+		if err != nil {
+			ERROR.Println(NET, "connect SetReadDeadline error", err)
+			return packets.ErrNetworkError, false
+		}
+	}
+
 	ca, err := packets.ReadPacket(c.conn)
 	if err != nil {
 		ERROR.Println(NET, "connect got error", err)
 		return packets.ErrNetworkError, false
 	}
+         
+        if c.options.ReadTimeout > 0 {
+		if err := c.conn.SetReadDeadline(time.Time{}); err != nil {
+			ERROR.Println(NET, "connect SetReadDeadline error", err)
+			return packets.ErrNetworkError, false
+		}
+	}
+
 	if ca == nil {
 		ERROR.Println(NET, "received nil packet")
 		return packets.ErrNetworkError, false

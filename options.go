@@ -80,9 +80,10 @@ type ClientOptions struct {
 	OnConnectionLost        ConnectionLostHandler
 	OnReconnecting          ReconnectHandler
 	WriteTimeout            time.Duration
-	MessageChannelDepth     uint
-	ResumeSubs              bool
-	HTTPHeaders             http.Header
+	ReadTimeout         time.Duration
+	MessageChannelDepth uint
+	ResumeSubs          bool
+	HTTPHeaders         http.Header
 }
 
 // NewClientOptions will create a new ClientClientOptions type with some
@@ -120,6 +121,7 @@ func NewClientOptions() *ClientOptions {
 		OnConnect:               nil,
 		OnConnectionLost:        DefaultConnectionLostHandler,
 		WriteTimeout:            0, // 0 represents timeout disabled
+                ReadTimeout:             30 * time.Second,
 		ResumeSubs:              false,
 		HTTPHeaders:             make(map[string][]string),
 	}
